@@ -1,27 +1,21 @@
 import pandas as pd
 from apiclient.discovery import build
+import os
+from dotenv import load_dotenv, dotenv_values 
 
-#creds_data = pd.read_json("creds.json")
-api_key = "AIzaSyBo8neO87v5UwoFhisEYThE0KZcqeqCkaE"
+load_dotenv() 
 
-query = "Algebra and Probability in machine learning"
-query = query.replace(" ", "+")
-print(query)
-
-
-youtube = build("youtube", "v3", developerKey = api_key)
-
-req = youtube.search().list(q='algebra',part = 'snippet', type = 'video',maxResults=5)
-res = req.execute()
-print(res)
-
-videos = {}
-for i in res['items']:
-    # print(i['id']['videoId'])
-    # print(i['snippet']['title'])
-
-    video_link = "https://www.youtube.com/watch?v=" + i['id']['videoId']
-    video_title = i['snippet']['title']
-    videos[video_title] = video_link
-
-print(videos)
+api_key = os.getenv("API_Key")
+def recommendations(query):
+    #query = "Algebra and Probability in machine learning"
+    query = query.replace(" ", "+")
+    youtube = build("youtube", "v3", developerKey = api_key)
+    req = youtube.search().list(q='algebra',part = 'snippet', type = 'video',maxResults=5)
+    res = req.execute()
+    
+    videos = {}
+    for i in res['items']:
+        video_link = "https://www.youtube.com/watch?v=" + i['id']['videoId']
+        video_title = i['snippet']['title']
+        videos[video_title] = video_link
+    return videos
